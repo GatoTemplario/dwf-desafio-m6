@@ -1,0 +1,60 @@
+.codigo__container{
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    width: 100%;
+    font-family: 'Odibee Sans', cursive;
+}
+.codigo__container-label{
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    font-family: 'Odibee Sans', cursive;
+    flex-grow: 1;
+}
+
+.codigo__label{
+    font-size: 35px;
+    font-weight: 700;
+    font-size: 85px;
+    color: black;
+    width: fit-content;
+    margin: 0px;
+    text-align: left;
+}
+@media(min-width: 769px){
+    .codigo__label{
+        font-size: 105px;
+    }
+}
+.codigo__label-roomId{
+    font-size: 50px;
+    font-weight: 700;
+    font-size: 85px;
+    color: #009048;
+    width: fit-content;
+    margin: 0px;
+    text-align: left;
+}
+
+
+
+.codigo__container-options{
+    height: 120px;
+    flex-grow: 1;
+    display: grid;
+    grid-template-columns: auto auto auto;
+    gap: 25px;
+    align-items: flex-end;
+    margin-bottom: 0px;
+    /* height: 100%; */
+}
+.codigo__option{
+    
+}
