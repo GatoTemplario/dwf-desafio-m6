@@ -17,7 +17,7 @@
   },
   "scripts": {
     "dev:front": "parcel serve ./src/client/index.html",
-    "build:front": "parcel build ./src/client/index.html",
+    "build:front": "npx parcel build ./src/client/index.html",
     "dev": "nodemon ./src/server/express.ts",
     "test": "ava",
     "build:api": "tsc",
