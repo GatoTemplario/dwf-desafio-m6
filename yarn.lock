@@ -3647,6 +3647,11 @@ type-is@~1.6.18:
     media-typer "0.3.0"
     mime-types "~2.1.24"
 
+typescript@^5.0.0-dev.20221109:
+  version "5.0.0-dev.20230118"
+  resolved "https://registry.yarnpkg.com/typescript/-/typescript-5.0.0-dev.20230118.tgz#de7624407eace6937a3ab7537c88f3b125c85bf3"
+  integrity sha512-mLhr9b2PSXo21+f210MSRD3EOdsrOg9NTWghkJNDaY0K7iWVK8E5FsflAsRzi+Rn/CsO7tH3pyl0LeGwVX25Cg==
+
 uc.micro@^1.0.1, uc.micro@^1.0.5:
   version "1.0.6"
   resolved "https://registry.yarnpkg.com/uc.micro/-/uc.micro-1.0.6.tgz#9c411a802a409a91fc6cf74081baba34b24499ac"

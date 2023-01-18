@@ -12,7 +12,8 @@
     "firebase-admin": "^11.2.0",
     "nanoid": "^3.0.0",
     "nodemon": "^2.0.20",
-    "parcel": "^2.8.0"
+    "parcel": "^2.8.0",
+    "typescript": "^5.0.0-dev.20221109"
   },
   "scripts": {
     "dev:front": "parcel serve ./src/client/index.html",
