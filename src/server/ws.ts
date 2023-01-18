@@ -1,13 +1,18 @@
 import { state } from "../client/state";
 
 
-function initWs(){
+function initWs(API_BASE_URL, PORT){
     const currentState = state.getState()
     // console.log("currentstate1", currentState.rtdbRoomId);
-    // console.log("init ws");
+    console.log("init ws");
     
     // Create WebSocket connection.
     const socket = new WebSocket('ws://localhost:8080');
+    
+    fetch( API_BASE_URL + PORT + '/api/rps/' + currentState.info.rtdbRoomId,{
+        method: "POST",
+        headers: {"content-type": 'application/json'},
+    })
 
     // Connection opened
     socket.addEventListener('open', (event) => {
@@ -18,8 +23,6 @@ function initWs(){
 
     // Listen for messages
     socket.addEventListener('message', (event) => {
-        // console.log("current state", currentState);
-        
         const usefulJson = JSON.parse(event.data)
         console.log("usefulJson",usefulJson);
         function readyToPlay(){
@@ -39,31 +42,35 @@ function initWs(){
         function updateOutcome(){
             const ownerOutcome = usefulJson.ownerOutcome
             const imGuest      = currentState.info.imGuest
-            const history = usefulJson.history
+            const history      = usefulJson.history
 
-            if (ownerOutcome == currentState.game.outcomes[0] && imGuest){
-                currentState.game.resultado = currentState.game.outcomes[2]
-            }else if(ownerOutcome == currentState.game.outcomes[1] && imGuest){
-                currentState.game.resultado = currentState.game.outcomes[1]
+            const gana   = currentState.game.outcomes[0]
+            const empata = currentState.game.outcomes[1]
+            const pierde = currentState.game.outcomes[2]
+
+            if (ownerOutcome == gana){
+                imGuest? currentState.game.resultado = pierde : currentState.game.resultado = gana
+            }else if(ownerOutcome == pierde){
+                imGuest? currentState.game.resultado = gana   : currentState.game.resultado = pierde
             }else{
-                currentState.game.resultado = currentState.game.outcomes[0]
+                currentState.game.resultado = empata
             }
             currentState.game.history = history
             state.setState(currentState)
         }
         function updateHistory(){
-            const history = usefulJson.history
+            // const history = usefulJson.history
             
-            currentState.game.history = history
+            currentState.game.history = usefulJson.history
             state.setState(currentState)
         }
             
         if(usefulJson.ready){
             readyToPlay()
         }
-        // else if( usefulJson.status ){
-        //     updateHistory()
-        // }
+        else if( usefulJson.status ){
+            updateHistory()
+        }
         else{
             updateCurrentGame()
             updateOutcome()

@@ -64,9 +64,7 @@ export class ExistentRoomPage extends HTMLElement{
           Router.go("/existent-room-error")
         }else{
           state.setGame("")
-          .then(()=>{
-            Router.go("/start")
-          })
+          Router.go("/start")
         }
       })
     })

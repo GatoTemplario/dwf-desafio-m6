@@ -9,10 +9,12 @@ import cors from "cors"
 import { AppCheck } from "firebase-admin/lib/app-check/app-check";
 import { state } from "../client/state";
 
+import WebSocket, { WebSocketServer } from 'ws';
+
 // usar yarn add cors@2.8.5
 
-const port = process.env.PORT || 3030;
-const app = express()
+const port = process.env.PORT || 3000;
+const app  = express()
 
 const gameInfo = fs.collection("gameInfo")
 const roomsCollection = fs.collection("rooms")
@@ -40,22 +42,20 @@ app.post("/initServer", (req, res) => {
         ],
         outcomes: ["Ganaste", "Empate", "Perdiste"]
     })
-    .then(()=>{
+    .then(() => {
         res.status(201).json({ "message": "server iniciado!" })
     })
 })
 
 app.post("/rooms", (req, res) => {
     const {shortRoomIdAux} = req.body
-    const {nombre} = req.body
+    const {nombre}         = req.body
     
     if (shortRoomIdAux == ""){
         const roomShortId = 1000 + Math.floor(Math.random() * 999)
         const newDbDocRef = doc(db, "rooms", roomShortId.toString())
-    
-        console.log("no pasó ningun shortroomIdAux!");
+        const rtdbRef     = ref( rtdb, "/rooms/" + nanoid.nanoid())
         
-        const rtdbRef = ref( rtdb, "/rooms/" + nanoid.nanoid())
         set( rtdbRef, {
             // jugada: [] ,
             owner: nombre,
@@ -96,27 +96,27 @@ app.get("/rooms/:roomId", (req, res) => {
 })
 
 app.post("/rooms/:roomId", (req, res) => {
-    const {from}    = req.body;
-    const {jugada}  = req.body;
-    const {roomId}  = req.params;
-    const rtdbRef   = ref( rtdb, "rooms/" + roomId + "/jugada" )
+    const {from}   = req.body;
+    const {jugada} = req.body;
+    const {roomId} = req.params;
+    const rtdbRef  = ref( rtdb, "rooms/" + roomId + "/jugada" )
 
     push( rtdbRef, { from, jugada })
 })
 
 app.post("/existentRoom/:roomId", (req, res) => {
-    const {nombre}    = req.body;
-    const {roomId}  = req.params;
-    const rtdbRef   = ref( rtdb, "rooms/" + roomId )
+    const {nombre} = req.body;
+    const {roomId} = req.params;
+    const rtdbRef  = ref( rtdb, "rooms/" + roomId )
     
     update( rtdbRef, { guest: nombre})
 })
 
 app.post("/usersReady/:roomId", (req, res) => {
-    const {whoIsReady}  = req.body;
-    const {boolean} = req.body;
-    const {roomId}  = req.params;
-    const rtdbRef   = ref( rtdb, "rooms/" + roomId + "/ready")
+    const {whoIsReady} = req.body;
+    const {boolean}    = req.body;
+    const {roomId}     = req.params;
+    const rtdbRef      = ref( rtdb, "rooms/" + roomId + "/ready")
     
     function updateBoolean( boolean ){
         if(whoIsReady == "owner"){
@@ -131,21 +131,17 @@ app.post("/usersReady/:roomId", (req, res) => {
 })
 
 app.post("/setGame/:rtdbRoomId", async(req, res) => {
-    const {play}    = req.body;
-    const {from}    = req.body
-    const {rtdbRoomId}  = req.params;
+    const {play}             = req.body;
+    const {from}             = req.body
+    const {rtdbRoomId}       = req.params;
     const rtdbCurrentGameRef = ref( rtdb, "/rooms/" + rtdbRoomId + "/currentGame")
     
     // CHEQUEAR QUE LOS REFS SEAN IGUALES!!! POR ALGUNA RAZON EL CURRENT GAME SE ACTIVA DOS VECES
 
     function aux(){
-        console.log("uso function aux");
-        
         if(from == "owner"){
-            console.log("update owner");
             return update( rtdbCurrentGameRef, {ownerPlay : play})
         }else if (from == "guest"){
-            console.log("update guest");
             return update( rtdbCurrentGameRef, {guestPlay : play})
         }
     }
@@ -161,97 +157,292 @@ app.post("/cleanHistory/:rtdbRoomId", async (req, res)=>{
     const auxiliarRef    = ref( rtdb, "/rooms/" + rtdbRoomId + "/currentGame")
     
     await update(rtdbHistoryRef, { owner: 0 , guest: 0})
-    await update(auxiliarRef, boolean? { guestPlay: "" } : { ownerPlay: "" } )
+    // await update(auxiliarRef, boolean? { guestPlay: "" } : { ownerPlay: "" } )
+    await update(auxiliarRef, { guestPlay: "" ,ownerPlay: "" } )
     res.status(201).json({"message": "borrado compadri"})
 })
 
 
+// const http   = require('http');
+// const ws     = require('ws');
+// const wsPort = 8080
+
+// const server = http.createServer(app)
+// const wss = new ws.Server({port: 3100});
+
+// function accept(req, res) {
+//     console.log("ws fired up");
+    
+//     wss.handleUpgrade(req, req.socket, Buffer.alloc(0), onConnect);
+// }
 
 
+// function onConnect(ws) {
+//     console.log("function onconnect");
 
-const http = require('http');
-const ws = require('ws');
+//     async function currentGameResponse(currentGame, rtdbHistoryRef) {
+//         // DETERMINA QUIEN GANA Y ACTUALIZA EL CONTADOR
+//         const gameInfoRef = doc(db, "gameInfo", "0")
+//         const reglas = (await getDoc(gameInfoRef)).data()
+//         const ownerPlay = reglas.mapa.find( e => {
+//             return e.nombre == currentGame.ownerPlay
+//         })
+//         const rtdbHistoryObject  = (await get(rtdbHistoryRef)).val() 
+//         const responseObj = { currentGame, ownerOutcome: {} , history : rtdbHistoryObject}
+
+//         if(currentGame.guestPlay == ownerPlay?.nombre){
+//             // Empate
+//             responseObj.ownerOutcome = reglas.outcomes[1]
+
+//             return responseObj
+//         }else if(currentGame.guestPlay == ownerPlay?.gana){
+//             // Gana
+//             console.log("sumo uno a gana");
+            
+//             responseObj.ownerOutcome = reglas.outcomes[0]
+//             responseObj.history.owner++
+
+//             return responseObj
+//         }else{
+//             responseObj.ownerOutcome = reglas.outcomes[2]
+//             responseObj.history.guest++
+
+//             return responseObj
+//         }
+//     }
+//     ws.on('message', function (message) {
+//         console.log("message: ", message.toString());
+        
+//         const rtdbRoomId         = message.toString()
+//         const readyRef           = ref( rtdb, "/rooms/" + rtdbRoomId + "/ready")
+//         const rtdbCurrentGameRef = ref( rtdb, "/rooms/" + rtdbRoomId + "/currentGame")
+//         const rtdbHistoryRef     = ref( rtdb, "/rooms/" + rtdbRoomId + "/history")
+
+//         onValue(readyRef, snapshot => {
+//             console.log("ready: ", snapshot.val());
+            
+//             ws.send(JSON.stringify({ ready: snapshot }))
+//         })
+        
+//         onValue(rtdbCurrentGameRef, snapshot => {
+//             const currentGame = snapshot.val()
+//             const currentState = state.getState()
+//             console.log("currentgame rtdb from: ", currentState.info.imGuest? "guest": "owner", currentGame);
+            
+//             // POSIBLE SOLUCION!! MOVER TODA LA LOGCA DEL CONTADOR AL ENDPOINT. AQUI DEJAR UN ONVALUE PARA ENVIAR DIRECTAMENTE EL RESULTADO
+//             // console.log("boolean",currentGame.guestPlay !== "" && currentGame.ownerPlay !== "");
+//             if(currentGame.guestPlay !== "" && currentGame.ownerPlay !== ""){
+//                 currentGameResponse(currentGame, rtdbHistoryRef)
+//                 .then( res => {
+//                     // update(rtdbHistoryRef, res.history)
+//                     ws.send(JSON.stringify(res))
+//                     console.log("res", res);
+//                 })
+//             }
+//         })
+
+//         onValue(rtdbHistoryRef, snapshot => {
+//             const history = snapshot.val();
+            
+//             if (history.owner == 0 && history.guest == 0){
+//                 ws.send(JSON.stringify({ status: "restart", history }))
+//             }
+//         })
+//     });
+//     // ws.on('message', function (message) {
+//     //     const rtdbRoomId         = message.toString()
+//     //     const readyRef           = ref( rtdb, "/rooms/" + rtdbRoomId + "/ready")
+//     //     const rtdbCurrentGameRef = ref( rtdb, "/rooms/" + rtdbRoomId + "/currentGame")
+//     //     const rtdbHistoryRef     = ref( rtdb, "/rooms/" + rtdbRoomId + "/history")
+
+//     //     onValue(readyRef, snapshot => {
+//     //         ws.send(JSON.stringify({ ready: snapshot }))
+//     //     })
+        
+//     //     onValue(rtdbCurrentGameRef, snapshot => {
+//     //         const currentGame = snapshot.val()
+//     //         const currentState = state.getState()
+//     //         console.log("currentgame rtdb from: ", currentState.info.imGuest? "guest": "owner", currentGame);
+            
+//     //         // POSIBLE SOLUCION!! MOVER TODA LA LOGCA DEL CONTADOR AL ENDPOINT. AQUI DEJAR UN ONVALUE PARA ENVIAR DIRECTAMENTE EL RESULTADO
+//     //         // console.log("boolean",currentGame.guestPlay !== "" && currentGame.ownerPlay !== "");
+//     //         if(currentGame.guestPlay !== "" && currentGame.ownerPlay !== ""){
+//     //             currentGameResponse(currentGame, rtdbHistoryRef)
+//     //             .then( res => {
+//     //                 update(rtdbHistoryRef, res.history)
+//     //                 ws.send(JSON.stringify(res))
+//     //                 console.log("res", res);
+                    
+//     //             })
+//     //         }
+//     //     })
+
+//     //     onValue(rtdbHistoryRef, snapshot => {
+//     //         const history = snapshot.val();
+            
+//     //         if (history.owner == 0 && history.guest == 0){
+//     //             ws.send(JSON.stringify({ status: "restart", history }))
+//     //         }
+//     //     })
+//     // });
+// }
+
+// if (!module.parent) {
+//   http.createServer(accept).listen(wsPort);
+// } else {
+//   exports.accept = accept;
+// }
+
+
+const http   = require('http');
+const ws     = require('ws');
 const wsPort = 8080
 
-const wss = new ws.Server({port: 3100});
 
-function accept(req, res) {
-    wss.handleUpgrade(req, req.socket, Buffer.alloc(0), onConnect);
-}
 
-function onConnect(ws) {
-    console.log("function onconnect");
+const server = http.createServer(app).listen(wsPort)
+const wss    = new ws.Server({server});
 
-    async function currentGameResponse(currentGame, rtdbHistoryRef) {
-        // DETERMINA QUIEN GANA Y ACTUALIZA EL CONTADOR
-        const gameInfoRef = doc(db, "gameInfo", "0")
-        const reglas = (await getDoc(gameInfoRef)).data()
-        const ownerPlay = reglas.mapa.find( e => {
-            return e.nombre == currentGame.ownerPlay
-        })
-        const rtdbHistoryObject  = (await get(rtdbHistoryRef)).val() 
-        const responseObj = { currentGame, ownerOutcome: {} , history : rtdbHistoryObject}
 
-        if(currentGame.guestPlay == ownerPlay?.nombre){
-            // Empate
-            responseObj.ownerOutcome = reglas.outcomes[1]
 
-            return responseObj
-        }else if(currentGame.guestPlay == ownerPlay?.gana){
-            // Gana
-            console.log("sumo uno a gana");
+app.post("/api/rps/:rtdbRoomId", (req, res) => {
+    const {rtdbRoomId}  = req.params;
+    handleRPS(wss, rtdbRoomId);
+});
+
+function handleRPS(wss, rtdbRoomId) {
+    // Send message over web socket connection
+    console.log("activo handleRPS");
+    wss.on("connection", (ws) => {
+        // Handle web socket connection
+        console.log("WS connected");
+        ws.on('message',function (message){
+            // rtdbRoomId = message.toString()
+            // const rtdbRoomId = message.toString()
+            // ws.send(JSON.stringify({"res": "res"}))
+            // chompiras(rtdbRoomId)
             
-            responseObj.ownerOutcome = reglas.outcomes[0]
-            responseObj.history.owner++
+            // const readyRef           = ref( rtdb, "/rooms/" + rtdbRoomId + "/ready")
+            // const rtdbCurrentGameRef = ref( rtdb, "/rooms/" + rtdbRoomId + "/currentGame")
+            // const rtdbHistoryRef     = ref( rtdb, "/rooms/" + rtdbRoomId + "/history")
+         
+   
+            // onValue(rtdbHistoryRef, snapshot => {
+            //     console.log("mod history ref");
+            //     const history = snapshot.val();
+                
+            //     if (history.owner == 0 && history.guest == 0){
+            //         ws.send(JSON.stringify({ status: "restart", history }))
+            //     }
+            // })
+        });
 
-            return responseObj
-        }else{
-            responseObj.ownerOutcome = reglas.outcomes[2]
-            responseObj.history.guest++
-
-            return responseObj
-        }10
-    }
-    ws.on('message', function (message) {
-        const rtdbRoomId         = message.toString()
         const readyRef           = ref( rtdb, "/rooms/" + rtdbRoomId + "/ready")
         const rtdbCurrentGameRef = ref( rtdb, "/rooms/" + rtdbRoomId + "/currentGame")
         const rtdbHistoryRef     = ref( rtdb, "/rooms/" + rtdbRoomId + "/history")
 
         onValue(readyRef, snapshot => {
-            ws.send(JSON.stringify({ ready: snapshot }))
+            console.log("ready: ", snapshot.val());
+
+            wss.clients.forEach(function each(client) {
+                // console.log("client.readyState", client.readyState);
+                client.send( JSON.stringify({ ready: snapshot }));
+            });
         })
-        
         onValue(rtdbCurrentGameRef, snapshot => {
-            const currentGame = snapshot.val()
+            const currentGame  = snapshot.val()
             const currentState = state.getState()
-            console.log("currentgame rtdb from: ", currentState.info.imGuest? "guest": "owner", currentGame);
+            // console.log("currentgame rtdb from: ", currentState.info.imGuest? "guest": "owner", currentGame);
             
-            // console.log("boolean",currentGame.guestPlay !== "" && currentGame.ownerPlay !== "");
             if(currentGame.guestPlay !== "" && currentGame.ownerPlay !== ""){
                 currentGameResponse(currentGame, rtdbHistoryRef)
                 .then( res => {
-                    update(rtdbHistoryRef, res.history)
-                    ws.send(JSON.stringify(res))
-                    console.log("res", res);
-                    
+                        wss.clients.forEach(function each(client) {
+                            update(rtdbHistoryRef, res.history)
+                            client.send(JSON.stringify(res))
+                            // console.log("res", res);
+                        });
                 })
-            }
+                }
         })
-
         onValue(rtdbHistoryRef, snapshot => {
             const history = snapshot.val();
-            
             if (history.owner == 0 && history.guest == 0){
-                ws.send(JSON.stringify({ status: "restart", history }))
+                wss.clients.forEach(function each(client) {
+                    client.send(JSON.stringify({ status: "restart", history }))
+                });
             }
         })
+    
     });
 }
 
-if (!module.parent) {
-  http.createServer(accept).listen(wsPort);
-} else {
-  exports.accept = accept;
-}
 
+function chompiras (rtdbRoomId){
+    console.log("func chompiras");
+    
+    const readyRef           = ref( rtdb, "/rooms/" + rtdbRoomId + "/ready")
+    const rtdbCurrentGameRef = ref( rtdb, "/rooms/" + rtdbRoomId + "/currentGame")
+    const rtdbHistoryRef     = ref( rtdb, "/rooms/" + rtdbRoomId + "/history")
+
+    onValue(readyRef, snapshot => {
+        console.log("ready: ", snapshot.val());
+        
+        ws.send(JSON.stringify({ ready: snapshot }))
+    })
+    
+    onValue(rtdbCurrentGameRef, snapshot => {
+        const currentGame  = snapshot.val()
+        const currentState = state.getState()
+        console.log("currentgame rtdb from: ", currentState.info.imGuest? "guest": "owner", currentGame);
+        
+        // POSIBLE SOLUCION!! MOVER TODA LA LOGCA DEL CONTADOR AL ENDPOINT. AQUI DEJAR UN ONVALUE PARA ENVIAR DIRECTAMENTE EL RESULTADO
+        // console.log("boolean",currentGame.guestPlay !== "" && currentGame.ownerPlay !== "");
+        if(currentGame.guestPlay !== "" && currentGame.ownerPlay !== ""){
+            currentGameResponse(currentGame, rtdbHistoryRef)
+            .then( res => {
+                // update(rtdbHistoryRef, res.history)
+                ws.send(JSON.stringify(res))
+                console.log("res", res);
+            })
+        }
+    })
+
+    onValue(rtdbHistoryRef, snapshot => {
+        const history = snapshot.val();
+        
+        if (history.owner == 0 && history.guest == 0){
+            ws.send(JSON.stringify({ status: "restart", history }))
+        }
+    })
+}
+async function currentGameResponse(currentGame, rtdbHistoryRef) {
+    console.log("function currentGameResponse");
+    
+    // DETERMINA QUIEN GANA Y ACTUALIZA EL CONTADOR
+    const gameInfoRef = doc(db, "gameInfo", "0")
+    const reglas      = (await getDoc(gameInfoRef)).data()
+    const ownerPlay   = reglas.mapa.find( e => {
+        return e.nombre == currentGame.ownerPlay
+    })
+    const rtdbHistoryObject = (await get(rtdbHistoryRef)).val() 
+    const responseObj       = { currentGame, ownerOutcome: {} , history : rtdbHistoryObject}
+
+    if(currentGame.guestPlay == ownerPlay?.nombre){
+        // Empate
+        responseObj.ownerOutcome = reglas.outcomes[1]
+
+        return responseObj
+    }else if(currentGame.guestPlay == ownerPlay?.gana){
+        // Gana
+        responseObj.ownerOutcome = reglas.outcomes[0]
+        responseObj.history.owner++
+        
+        return responseObj
+    }else{
+        responseObj.ownerOutcome = reglas.outcomes[2]
+        responseObj.history.guest++
+
+        return responseObj
+    }
+}

@@ -16,11 +16,9 @@ import { initComponents } from "./components/components-importer"
     router
     initComponents()
 
-    const fondo = require("url:./images/fondo.png")
-    // const div   = document.querySelector(".root") as HTMLElement
-    const body  = document.querySelector("body") as HTMLElement
+    const fondo    = require("url:./images/fondo.png")
+    const body     = document.querySelector("body") as HTMLElement
     const auxDivEl = document.createElement("div")
-
 
     auxDivEl.classList.add("imagen-fondo__container")
     auxDivEl.innerHTML= `<img class="imagen-fondo__image" src="${fondo}" alt="">`

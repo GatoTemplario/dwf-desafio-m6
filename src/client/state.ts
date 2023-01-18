@@ -74,7 +74,7 @@ const state = {
             currentState.info.roomId = responseData.roomId
             currentState.info.rtdbRoomId = responseData.rtdbRoomId
             this.setState(currentState)
-            // initWs()
+            initWs(API_BASE_URL, PORT)
         })
     },
     async auth(nombre, shortRoomId){
@@ -87,19 +87,19 @@ const state = {
             if (response !== null && response.data.owner == nombre){
                 const currentState = state.getState()
                 
-                currentState.info.owner  = nombre
-                currentState.info.imGuest = false
-                currentState.info.roomId = shortRoomId
+                currentState.info.owner      = nombre
+                currentState.info.imGuest    = false
+                currentState.info.roomId     = shortRoomId
                 currentState.info.rtdbRoomId = response.data.rtdbRoomId
                 state.setState(currentState)
 
             }else if(response !== null && response.data.owner !== nombre){
                 const currentState = state.getState()
                 
-                currentState.info.owner  = response.data.owner
-                currentState.info.guest  = nombre
-                currentState.info.imGuest = true
-                currentState.info.roomId = shortRoomId
+                currentState.info.owner      = response.data.owner
+                currentState.info.guest      = nombre
+                currentState.info.imGuest    = true
+                currentState.info.roomId     = shortRoomId
                 currentState.info.rtdbRoomId = response.data.rtdbRoomId
                 state.setState(currentState)
 
@@ -110,7 +110,8 @@ const state = {
                 })
 
             }
-        initWs()
+        // if owner== true => initws!!!!!
+        initWs(API_BASE_URL, PORT)
         // console.log("response", response);
         
         return response

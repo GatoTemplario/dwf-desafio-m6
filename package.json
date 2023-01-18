@@ -16,6 +16,11 @@
   },
   "scripts": {
     "dev:front": "parcel serve ./src/client/index.html",
-    "dev": "nodemon ./src/server/express.ts"
+    "build:front": "parcel build ./src/client/index.html",
+    "dev": "nodemon ./src/server/express.ts",
+    "test": "ava",
+    "build:api": "tsc",
+    "build": "yarn build:front && tsc",
+    "start": "node ./src/server/express.js"
   }
 }
