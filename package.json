@@ -2,6 +2,11 @@
   "name": "capitulo8-desafio-final",
   "version": "1.0.0",
   "license": "MIT",
+  "engines": {
+    "node": "^16.13.1"
+  },
+  "type": "commonjs",
+  "browserslist": "> 0.5%, last 2 versions, not dead",
   "dependencies": {
     "@types/node": "^18.11.9",
     "@vaadin/router": "^1.7.4",

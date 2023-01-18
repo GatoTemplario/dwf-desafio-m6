@@ -6,10 +6,7 @@ import { push, ref, set, onValue, update, get, remove } from "firebase/database"
 import * as nanoid from "nanoid"
 import { doc, getDoc, setDoc } from "firebase/firestore";
 import cors from "cors"
-import { AppCheck } from "firebase-admin/lib/app-check/app-check";
 import { state } from "../client/state";
-
-import WebSocket, { WebSocketServer } from 'ws';
 
 // usar yarn add cors@2.8.5
 
