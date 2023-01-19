@@ -18,11 +18,11 @@
     "nanoid": "^3.0.0",
     "nodemon": "^2.0.20",
     "parcel": "^2.8.0",
-    "typescript": "^5.0.0-dev.20221109"
+    "typescript": "^5.0.0-dev.20230119"
   },
   "scripts": {
     "dev:front": "parcel serve ./src/client/index.html",
-    "build:front": "npx parcel build ./src/client/index.html",
+    "build:front": "yarn parcel build ./src/client/index.html",
     "dev": "nodemon ./src/server/express.ts",
     "test": "ava",
     "build:api": "tsc",
