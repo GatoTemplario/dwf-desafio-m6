@@ -26,7 +26,7 @@
     "dev": "nodemon ./src/server/express.ts",
     "test": "ava",
     "build:api": "tsc",
-    "build": "yarn build:front && tsc",
+    "build": "yarn build:front && yarn build:api",
     "start": "node ./src/server/express.js"
   }
 }
