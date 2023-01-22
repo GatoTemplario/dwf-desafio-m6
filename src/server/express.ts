@@ -159,6 +159,9 @@ app.post("/cleanHistory/:rtdbRoomId", async (req, res)=>{
     res.status(201).json({"message": "borrado compadri"})
 })
 
+app.get("*", (req, res) => {
+    res.sendFile(__dirname, "../../dist/index.html");
+  });
 
 // const http   = require('http');
 // const ws     = require('ws');
