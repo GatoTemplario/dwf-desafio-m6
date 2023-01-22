@@ -1,6 +1,6 @@
 import { initWs } from "../server/ws"
 
-const API_BASE_URL = "http://localhost:"
+const API_BASE_URL = process.env.API_BASE_URL || "http://localhost:"
 const PORT = 3000
 
 export type Jugada = "Piedra" | "Papel" | "Tijera" | ""
