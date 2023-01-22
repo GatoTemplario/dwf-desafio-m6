@@ -35,6 +35,8 @@ const state = {
     listeners: [],
     initState(){
         console.log("initstate");
+        console.log("api base url: ", API_BASE_URL);
+        
     },
     getState(){
         return this.data
