@@ -1,7 +1,7 @@
 import { initWs } from "../server/ws"
 
-const API_BASE_URL = process.env.API_BASE_URL || "http://localhost:"
 const PORT = 3000
+const API_BASE_URL = process.env.API_BASE_URL || "http://localhost:" + PORT
 
 export type Jugada = "Piedra" | "Papel" | "Tijera" | ""
 export type Game = { oponent: Jugada, user: Jugada }
@@ -54,7 +54,7 @@ const state = {
     pushJugada( jugada: Jugada ){
         const currentState = this.getState()
         const nombreDelUser = currentState.info.user
-        fetch( API_BASE_URL + PORT + "/rooms/" + currentState.info.rtdbRoomId,{
+        fetch( API_BASE_URL + "/rooms/" + currentState.info.rtdbRoomId,{
             method: "POST",
             headers: { "content-type": "application/json"},
             body: JSON.stringify({

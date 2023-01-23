@@ -45,6 +45,8 @@ app.post("/initServer", (req, res) => {
 })
 
 app.post("/rooms", (req, res) => {
+    console.log("uso endpoint rooms");
+    
     const {shortRoomIdAux} = req.body
     const {nombre}         = req.body
     
