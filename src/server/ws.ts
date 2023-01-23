@@ -2,12 +2,14 @@ import { state } from "../client/state";
 
 
 function initWs(API_BASE_URL){
+    console.log("api base: ", API_BASE_URL);
+    
     const currentState = state.getState()
     // console.log("currentstate1", currentState.rtdbRoomId);
     console.log("init ws");
     
     // Create WebSocket connection.
-    const socket = new WebSocket('ws://localhost:8080');
+    const socket = new WebSocket(`ws://${location.host}`);
     
     fetch( API_BASE_URL + '/api/rps/' + currentState.info.rtdbRoomId,{
         method: "POST",

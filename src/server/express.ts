@@ -45,8 +45,6 @@ app.post("/initServer", (req, res) => {
 })
 
 app.post("/rooms", (req, res) => {
-    console.log("uso endpoint rooms");
-    
     const {shortRoomIdAux} = req.body
     const {nombre}         = req.body
     
@@ -165,147 +163,16 @@ app.get("*", (req, res) => {
     res.sendFile(__dirname, "../../dist/index.html");
   });
 
-// const http   = require('http');
-// const ws     = require('ws');
-// const wsPort = 8080
-
-// const server = http.createServer(app)
-// const wss = new ws.Server({port: 3100});
-
-// function accept(req, res) {
-//     console.log("ws fired up");
-    
-//     wss.handleUpgrade(req, req.socket, Buffer.alloc(0), onConnect);
-// }
-
-
-// function onConnect(ws) {
-//     console.log("function onconnect");
-
-//     async function currentGameResponse(currentGame, rtdbHistoryRef) {
-//         // DETERMINA QUIEN GANA Y ACTUALIZA EL CONTADOR
-//         const gameInfoRef = doc(db, "gameInfo", "0")
-//         const reglas = (await getDoc(gameInfoRef)).data()
-//         const ownerPlay = reglas.mapa.find( e => {
-//             return e.nombre == currentGame.ownerPlay
-//         })
-//         const rtdbHistoryObject  = (await get(rtdbHistoryRef)).val() 
-//         const responseObj = { currentGame, ownerOutcome: {} , history : rtdbHistoryObject}
-
-//         if(currentGame.guestPlay == ownerPlay?.nombre){
-//             // Empate
-//             responseObj.ownerOutcome = reglas.outcomes[1]
-
-//             return responseObj
-//         }else if(currentGame.guestPlay == ownerPlay?.gana){
-//             // Gana
-//             console.log("sumo uno a gana");
-            
-//             responseObj.ownerOutcome = reglas.outcomes[0]
-//             responseObj.history.owner++
-
-//             return responseObj
-//         }else{
-//             responseObj.ownerOutcome = reglas.outcomes[2]
-//             responseObj.history.guest++
-
-//             return responseObj
-//         }
-//     }
-//     ws.on('message', function (message) {
-//         console.log("message: ", message.toString());
-        
-//         const rtdbRoomId         = message.toString()
-//         const readyRef           = ref( rtdb, "/rooms/" + rtdbRoomId + "/ready")
-//         const rtdbCurrentGameRef = ref( rtdb, "/rooms/" + rtdbRoomId + "/currentGame")
-//         const rtdbHistoryRef     = ref( rtdb, "/rooms/" + rtdbRoomId + "/history")
-
-//         onValue(readyRef, snapshot => {
-//             console.log("ready: ", snapshot.val());
-            
-//             ws.send(JSON.stringify({ ready: snapshot }))
-//         })
-        
-//         onValue(rtdbCurrentGameRef, snapshot => {
-//             const currentGame = snapshot.val()
-//             const currentState = state.getState()
-//             console.log("currentgame rtdb from: ", currentState.info.imGuest? "guest": "owner", currentGame);
-            
-//             // POSIBLE SOLUCION!! MOVER TODA LA LOGCA DEL CONTADOR AL ENDPOINT. AQUI DEJAR UN ONVALUE PARA ENVIAR DIRECTAMENTE EL RESULTADO
-//             // console.log("boolean",currentGame.guestPlay !== "" && currentGame.ownerPlay !== "");
-//             if(currentGame.guestPlay !== "" && currentGame.ownerPlay !== ""){
-//                 currentGameResponse(currentGame, rtdbHistoryRef)
-//                 .then( res => {
-//                     // update(rtdbHistoryRef, res.history)
-//                     ws.send(JSON.stringify(res))
-//                     console.log("res", res);
-//                 })
-//             }
-//         })
-
-//         onValue(rtdbHistoryRef, snapshot => {
-//             const history = snapshot.val();
-            
-//             if (history.owner == 0 && history.guest == 0){
-//                 ws.send(JSON.stringify({ status: "restart", history }))
-//             }
-//         })
-//     });
-//     // ws.on('message', function (message) {
-//     //     const rtdbRoomId         = message.toString()
-//     //     const readyRef           = ref( rtdb, "/rooms/" + rtdbRoomId + "/ready")
-//     //     const rtdbCurrentGameRef = ref( rtdb, "/rooms/" + rtdbRoomId + "/currentGame")
-//     //     const rtdbHistoryRef     = ref( rtdb, "/rooms/" + rtdbRoomId + "/history")
-
-//     //     onValue(readyRef, snapshot => {
-//     //         ws.send(JSON.stringify({ ready: snapshot }))
-//     //     })
-        
-//     //     onValue(rtdbCurrentGameRef, snapshot => {
-//     //         const currentGame = snapshot.val()
-//     //         const currentState = state.getState()
-//     //         console.log("currentgame rtdb from: ", currentState.info.imGuest? "guest": "owner", currentGame);
-            
-//     //         // POSIBLE SOLUCION!! MOVER TODA LA LOGCA DEL CONTADOR AL ENDPOINT. AQUI DEJAR UN ONVALUE PARA ENVIAR DIRECTAMENTE EL RESULTADO
-//     //         // console.log("boolean",currentGame.guestPlay !== "" && currentGame.ownerPlay !== "");
-//     //         if(currentGame.guestPlay !== "" && currentGame.ownerPlay !== ""){
-//     //             currentGameResponse(currentGame, rtdbHistoryRef)
-//     //             .then( res => {
-//     //                 update(rtdbHistoryRef, res.history)
-//     //                 ws.send(JSON.stringify(res))
-//     //                 console.log("res", res);
-                    
-//     //             })
-//     //         }
-//     //     })
-
-//     //     onValue(rtdbHistoryRef, snapshot => {
-//     //         const history = snapshot.val();
-            
-//     //         if (history.owner == 0 && history.guest == 0){
-//     //             ws.send(JSON.stringify({ status: "restart", history }))
-//     //         }
-//     //     })
-//     // });
-// }
-
-// if (!module.parent) {
-//   http.createServer(accept).listen(wsPort);
-// } else {
-//   exports.accept = accept;
-// }
-
 
 const http   = require('http');
 const ws     = require('ws');
-const wsPort = 8080
-
-
+const wsPort = port
 
 const server = http.createServer(app).listen(wsPort)
 const wss    = new ws.Server({server});
 
-
+console.log("server: ", server);
+console.log("wss: ", wss);
 
 app.post("/api/rps/:rtdbRoomId", (req, res) => {
     const {rtdbRoomId}  = req.params;
@@ -319,24 +186,6 @@ function handleRPS(wss, rtdbRoomId) {
         // Handle web socket connection
         console.log("WS connected");
         ws.on('message',function (message){
-            // rtdbRoomId = message.toString()
-            // const rtdbRoomId = message.toString()
-            // ws.send(JSON.stringify({"res": "res"}))
-            // chompiras(rtdbRoomId)
-            
-            // const readyRef           = ref( rtdb, "/rooms/" + rtdbRoomId + "/ready")
-            // const rtdbCurrentGameRef = ref( rtdb, "/rooms/" + rtdbRoomId + "/currentGame")
-            // const rtdbHistoryRef     = ref( rtdb, "/rooms/" + rtdbRoomId + "/history")
-         
-   
-            // onValue(rtdbHistoryRef, snapshot => {
-            //     console.log("mod history ref");
-            //     const history = snapshot.val();
-                
-            //     if (history.owner == 0 && history.guest == 0){
-            //         ws.send(JSON.stringify({ status: "restart", history }))
-            //     }
-            // })
         });
 
         const readyRef           = ref( rtdb, "/rooms/" + rtdbRoomId + "/ready")
@@ -380,44 +229,6 @@ function handleRPS(wss, rtdbRoomId) {
 }
 
 
-function chompiras (rtdbRoomId){
-    console.log("func chompiras");
-    
-    const readyRef           = ref( rtdb, "/rooms/" + rtdbRoomId + "/ready")
-    const rtdbCurrentGameRef = ref( rtdb, "/rooms/" + rtdbRoomId + "/currentGame")
-    const rtdbHistoryRef     = ref( rtdb, "/rooms/" + rtdbRoomId + "/history")
-
-    onValue(readyRef, snapshot => {
-        console.log("ready: ", snapshot.val());
-        
-        ws.send(JSON.stringify({ ready: snapshot }))
-    })
-    
-    onValue(rtdbCurrentGameRef, snapshot => {
-        const currentGame  = snapshot.val()
-        const currentState = state.getState()
-        console.log("currentgame rtdb from: ", currentState.info.imGuest? "guest": "owner", currentGame);
-        
-        // POSIBLE SOLUCION!! MOVER TODA LA LOGCA DEL CONTADOR AL ENDPOINT. AQUI DEJAR UN ONVALUE PARA ENVIAR DIRECTAMENTE EL RESULTADO
-        // console.log("boolean",currentGame.guestPlay !== "" && currentGame.ownerPlay !== "");
-        if(currentGame.guestPlay !== "" && currentGame.ownerPlay !== ""){
-            currentGameResponse(currentGame, rtdbHistoryRef)
-            .then( res => {
-                // update(rtdbHistoryRef, res.history)
-                ws.send(JSON.stringify(res))
-                console.log("res", res);
-            })
-        }
-    })
-
-    onValue(rtdbHistoryRef, snapshot => {
-        const history = snapshot.val();
-        
-        if (history.owner == 0 && history.guest == 0){
-            ws.send(JSON.stringify({ status: "restart", history }))
-        }
-    })
-}
 async function currentGameResponse(currentGame, rtdbHistoryRef) {
     console.log("function currentGameResponse");
     
