@@ -166,7 +166,7 @@ app.get("*", (req, res) => {
 
 const http   = require('http');
 const ws     = require('ws');
-const wsPort = port
+const wsPort = 8080
 
 const server = http.createServer(app).listen(wsPort)
 const wss    = new ws.Server({server});
