@@ -66,7 +66,7 @@ const state = {
     getNewRoom(){
         const currentState = state.getState()
 
-        fetch( API_BASE_URL + PORT + '/rooms',{
+        fetch( API_BASE_URL + '/rooms',{
             method: "POST",
             headers: {"content-type": 'application/json'},
             body: JSON.stringify({shortRoomIdAux: "", nombre: currentState.info.owner})
