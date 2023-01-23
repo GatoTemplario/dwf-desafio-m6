@@ -21,7 +21,7 @@ app.use(cors())
 app.use(express.static("dist"))
 
 app.listen(port, () => {
-    console.log(`Example app listening http://localhost:${port}`);
+    console.log(`Example app listening ${location.host}`);
 })
 app.get("/env", (req, res) => {
     res.json({
