@@ -76,11 +76,11 @@ const state = {
             currentState.info.roomId = responseData.roomId
             currentState.info.rtdbRoomId = responseData.rtdbRoomId
             this.setState(currentState)
-            initWs(API_BASE_URL, PORT)
+            initWs(API_BASE_URL)
         })
     },
     async auth(nombre, shortRoomId){
-        const primerFetch = await fetch( API_BASE_URL + PORT + '/rooms/' + shortRoomId, {
+        const primerFetch = await fetch( API_BASE_URL + '/rooms/' + shortRoomId, {
             method: "GET",
             headers: { "content-type": 'application/json' },
         })
@@ -105,7 +105,7 @@ const state = {
                 currentState.info.rtdbRoomId = response.data.rtdbRoomId
                 state.setState(currentState)
 
-                fetch( API_BASE_URL + PORT + '/existentRoom/' + currentState.info.rtdbRoomId,{
+                fetch( API_BASE_URL + '/existentRoom/' + currentState.info.rtdbRoomId,{
                     method: "POST",
                     headers: {"content-type": 'application/json'},
                     body: JSON.stringify({nombre})
@@ -113,7 +113,7 @@ const state = {
 
             }
         // if owner== true => initws!!!!!
-        initWs(API_BASE_URL, PORT)
+        initWs(API_BASE_URL)
         // console.log("response", response);
         
         return response
@@ -121,7 +121,7 @@ const state = {
     async isReady(whoIsReady: "owner" | "guest", boolean){
         const currentState = state.getState()
         
-        fetch( API_BASE_URL + PORT + '/usersReady/' + currentState.info.rtdbRoomId, {
+        fetch( API_BASE_URL + '/usersReady/' + currentState.info.rtdbRoomId, {
             method: "POST",
             headers: { "content-type": 'application/json' },
             body: JSON.stringify({whoIsReady, boolean})
@@ -135,7 +135,7 @@ const state = {
         
         boolean? currentState.game.currentGame.guestPlay = move : currentState.game.currentGame.ownerPlay = move
 
-        fetch( API_BASE_URL + PORT + '/setGame/' + currentState.info.rtdbRoomId,{
+        fetch( API_BASE_URL + '/setGame/' + currentState.info.rtdbRoomId,{
             method: "POST",
             headers: {"content-type": 'application/json'},
             body: JSON.stringify({
@@ -151,7 +151,7 @@ const state = {
         currentState.game.resultado = "";
         state.setState(currentState)
 
-        fetch( API_BASE_URL + PORT + '/cleanHistory/' + currentState.info.rtdbRoomId,{
+        fetch( API_BASE_URL + '/cleanHistory/' + currentState.info.rtdbRoomId,{
             method: "POST",
             headers: {"content-type": 'application/json'},
             body: JSON.stringify({
