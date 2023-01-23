@@ -171,9 +171,6 @@ const wsPort = port
 const server = http.createServer(app).listen(wsPort)
 const wss    = new ws.Server({server});
 
-console.log("server: ", server);
-console.log("wss: ", wss);
-
 app.post("/api/rps/:rtdbRoomId", (req, res) => {
     const {rtdbRoomId}  = req.params;
     handleRPS(wss, rtdbRoomId);
