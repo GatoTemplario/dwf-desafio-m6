@@ -84,6 +84,10 @@ function initWs(API_BASE_URL){
     socket.onclose = function(event) {
         console.log('Chau amigo! ', event.reason);
     }
+    socket.onerror = function (error){
+        console.log(error);
+        
+    }
 }
 
 export { initWs }
