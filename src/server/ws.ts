@@ -11,7 +11,7 @@ function initWs(API_BASE_URL){
     // Create WebSocket connection.
     const protocol = window.location.protocol.includes('https') ? 'wss' : 'ws'
     // SI ESTO NO FUNCIONA, PROBAR CON ${protocol}://${location.host}:${8080}
-    const socket = new WebSocket(`${protocol}://${location.host}`);
+    const socket = new WebSocket(`${protocol}://${location.host}:${8080}`);
     
     fetch( API_BASE_URL + '/api/rps/' + currentState.info.rtdbRoomId,{
         method: "POST",
