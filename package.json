@@ -18,6 +18,7 @@
     "nanoid": "^3.0.0",
     "nodemon": "^2.0.20",
     "parcel": "^2.8.0",
+    "path": "^0.12.7",
     "typescript": "^5.0.0-dev.20230119"
   },
   "scripts": {
@@ -27,6 +28,7 @@
     "test": "ava",
     "build:api": "tsc",
     "build": "yarn build:front && yarn build:api",
-    "start": "node ./src/server/express.js"
+    "start": "node ./src/server/express.js",
+    "buildstart": "yarn build && yarn start"
   }
 }

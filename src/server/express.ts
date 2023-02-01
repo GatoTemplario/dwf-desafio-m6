@@ -7,6 +7,7 @@ import * as nanoid from "nanoid"
 import { doc, getDoc, setDoc } from "firebase/firestore";
 import cors from "cors"
 import { state } from "../client/state";
+import path from "path";
 
 // usar yarn add cors@2.8.5
 
@@ -160,7 +161,7 @@ app.post("/cleanHistory/:rtdbRoomId", async (req, res)=>{
 })
 
 app.get("*", (req, res) => {
-    res.sendFile(__dirname, "../../dist/index.html");
+    res.sendFile(path.join(__dirname, "..", "..", "dist", "index.html"));
   });
 
 

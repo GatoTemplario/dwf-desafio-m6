@@ -37,6 +37,12 @@ const state = {
         console.log("initstate");
         console.log("api base url: ", API_BASE_URL);
         
+        const localData = localStorage.getItem("saved-state") as any;
+        console.log("localdata: ", localData);
+        
+        if ( localData !== null){
+            this.setState(JSON.parse(localData)) 
+        }
     },
     getState(){
         return this.data
@@ -46,6 +52,7 @@ const state = {
         for (const cb of this.listeners) {
             cb(newState)
         }
+        localStorage.setItem("saved-state", JSON.stringify(newState))
         console.log("state cambio!", this.data);
     },
     suscribe( callback: (any)=> any){
