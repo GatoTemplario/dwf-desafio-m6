@@ -29,6 +29,6 @@
     "build:api": "tsc",
     "build": "yarn build:front && yarn build:api",
     "start": "node ./src/server/express.js",
-    "buildstart": "yarn build && yarn start"
+    "buildnstart": "yarn build && yarn start"
   }
 }

@@ -1,8 +1,12 @@
+// import process from "process";
 import { state } from "../client/state";
+
 
 
 function initWs(API_BASE_URL){
     console.log("api base: ", API_BASE_URL);
+    const nodeEnv = process.env.NODE_ENV.trim()
+    console.log("env: ", nodeEnv);
     
     const currentState = state.getState()
     // console.log("currentstate1", currentState.rtdbRoomId);
@@ -11,7 +15,19 @@ function initWs(API_BASE_URL){
     // Create WebSocket connection.
     const protocol = window.location.protocol.includes('https') ? 'wss' : 'ws'
     // SI ESTO NO FUNCIONA, PROBAR CON ${protocol}://${location.host}:${8080}
-    const socket = new WebSocket(`${protocol}://${location.hostname}:${8080}`);
+    function locationHost(nodeEnv){
+        if(nodeEnv == "production"){
+            console.log("boolean true");
+            
+            return location.hostname + ":8080"  
+        }else{
+            console.log("boolean false");
+            
+            return location.host
+        }
+        
+    }
+    const socket = new WebSocket(`${protocol}://${locationHost(nodeEnv)}`);
     
     fetch( API_BASE_URL + '/api/rps/' + currentState.info.rtdbRoomId,{
         method: "POST",
