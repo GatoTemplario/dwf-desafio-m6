@@ -23,7 +23,7 @@ function initWs(API_BASE_URL){
         }else{
             console.log("boolean false");
             
-            return location.host + ":8080"
+            return location.host
         }
         
     }
@@ -99,7 +99,8 @@ function initWs(API_BASE_URL){
     });
 
     socket.onclose = function(event) {
-        console.log('Chau amigo! ', event.reason);
+        console.log('event :', event);
+        console.log('Chau amigo! :', event.reason);
     }
     socket.onerror = function (error){
         console.log(error);
