@@ -165,14 +165,15 @@ app.get("*", (req, res) => {
   });
 
 
-// const http   = require('http');
+const http   = require('http');
 // const ws     = require('ws');
 
 // const wsPort = 8080
 
 // const server = http.createServer(app).listen(wsPort)
 // const wss    = new ws.Server({server});
-const wss = new WebSocketServer({port : 8080})
+const server = http.createServer(app).listen()
+const wss = new WebSocketServer({ clientTracking: false, noServer: true })
 app.post("/api/rps/:rtdbRoomId", (req, res) => {
     const {rtdbRoomId}  = req.params;
     handleRPS(wss, rtdbRoomId);
