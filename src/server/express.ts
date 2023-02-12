@@ -8,7 +8,7 @@ import { doc, getDoc, setDoc } from "firebase/firestore";
 import cors from "cors"
 import { state } from "../client/state";
 import path from "path";
-
+import WebSocket, { WebSocketServer } from 'ws';
 // usar yarn add cors@2.8.5
 
 const port = process.env.PORT || 3000;
@@ -165,13 +165,14 @@ app.get("*", (req, res) => {
   });
 
 
-const http   = require('http');
-const ws     = require('ws');
-const wsPort = 8080
+// const http   = require('http');
+// const ws     = require('ws');
 
-const server = http.createServer(app).listen(wsPort)
-const wss    = new ws.Server({server});
+// const wsPort = 8080
 
+// const server = http.createServer(app).listen(wsPort)
+// const wss    = new ws.Server({server});
+const wss = new WebSocketServer({port : 8080})
 app.post("/api/rps/:rtdbRoomId", (req, res) => {
     const {rtdbRoomId}  = req.params;
     handleRPS(wss, rtdbRoomId);
