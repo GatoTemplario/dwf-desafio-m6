@@ -23,7 +23,7 @@ function initWs(API_BASE_URL){
         }else{
             console.log("boolean false");
             
-            return location.host
+            return location.host + ":8080"
         }
         
     }
