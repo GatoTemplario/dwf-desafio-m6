@@ -172,7 +172,7 @@ const http   = require('http');
 
 // const server = http.createServer(app).listen(wsPort)
 // const wss    = new ws.Server({server});
-const server = http.createServer(app).listen()
+const server = http.createServer(app).listen(port)
 const wss = new WebSocketServer({ clientTracking: false, noServer: true })
 app.post("/api/rps/:rtdbRoomId", (req, res) => {
     const {rtdbRoomId}  = req.params;
