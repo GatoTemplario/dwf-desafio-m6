@@ -238,11 +238,6 @@ const wsPort = 8080
 // DE DONDE SALE ESTE PORT??
 const wss = new ws.Server({port: 3100});
 
-function accept(req, res) {
-    wss.handleUpgrade(req, req.socket, Buffer.alloc(0), onConnect);
-}
-
-
 function onConnect(ws) {
     ws.on('message', function (message) {
     const rtdbRoomId = message.toString()
@@ -254,6 +249,10 @@ function onConnect(ws) {
         ws.send(elyeison)
     })
   });
+}
+
+function accept(req, res) {
+    wss.handleUpgrade(req, req.socket, Buffer.alloc(0), onConnect);
 }
 
 if (!module.parent) {

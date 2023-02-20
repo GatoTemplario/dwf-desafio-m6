@@ -13,7 +13,7 @@ function initWs(API_BASE_URL){
     console.log("init ws");
     
     // Create WebSocket connection.
-    const protocol = window.location.protocol.includes('https') ? 'wss' : 'ws'
+    
     // SI ESTO NO FUNCIONA, PROBAR CON ${protocol}://${location.host}:${8080}
     function locationHost(nodeEnv){
         if(nodeEnv == "production"){
@@ -29,14 +29,14 @@ function initWs(API_BASE_URL){
     }
     
     // const socket = new WebSocket(`${protocol}://${locationHost(nodeEnv)}`)
+    const protocol = window.location.protocol.includes('https') ? 'wss' : 'ws'
     const socket = new WebSocket(`${protocol}://${locationHost(nodeEnv)}`)
-    
     console.log("socket: ", socket);
     
-    fetch( API_BASE_URL + '/api/rps/' + currentState.info.rtdbRoomId,{
-        method: "POST",
-        headers: {"content-type": 'application/json'},
-    })
+    // fetch( API_BASE_URL + '/api/rps/' + currentState.info.rtdbRoomId,{
+    //     method: "POST",
+    //     headers: {"content-type": 'application/json'},
+    // })
 
     // Connection opened
     socket.addEventListener('open', (event) => {
