@@ -165,67 +165,101 @@ app.get("*", (req, res) => {
   });
 
 
-const http   = require('http');
+// const http   = require('http');
 // const ws     = require('ws');
 
 // const wsPort = 8080
 
 // const server = http.createServer(app).listen(wsPort)
 // const wss    = new ws.Server({server});
-const server = http.createServer(app).listen(port)
-const wss = new WebSocketServer({ clientTracking: false, noServer: true })
-app.post("/api/rps/:rtdbRoomId", (req, res) => {
-    const {rtdbRoomId}  = req.params;
-    handleRPS(wss, rtdbRoomId);
-});
 
-function handleRPS(wss, rtdbRoomId) {
-    // Send message over web socket connection
-    console.log("activo handleRPS");
-    wss.on("connection", (ws) => {
-        // Handle web socket connection
-        console.log("WS connected");
-        ws.on('message',function (message){
-        });
 
-        const readyRef           = ref( rtdb, "/rooms/" + rtdbRoomId + "/ready")
-        const rtdbCurrentGameRef = ref( rtdb, "/rooms/" + rtdbRoomId + "/currentGame")
-        const rtdbHistoryRef     = ref( rtdb, "/rooms/" + rtdbRoomId + "/history")
+// const server = http.createServer(app).listen()
+// const server = http.createServer(app).listen(port)
 
-        onValue(readyRef, snapshot => {
-            console.log("ready: ", snapshot.val());
+// const wss = new WebSocketServer({server: server})
+// app.post("/api/rps/:rtdbRoomId", (req, res) => {
+//     const {rtdbRoomId}  = req.params;
+//     handleRPS(wss, rtdbRoomId);
+// });
 
-            wss.clients.forEach(function each(client) {
-                // console.log("client.readyState", client.readyState);
-                client.send( JSON.stringify({ ready: snapshot }));
-            });
-        })
-        onValue(rtdbCurrentGameRef, snapshot => {
-            const currentGame  = snapshot.val()
-            const currentState = state.getState()
-            // console.log("currentgame rtdb from: ", currentState.info.imGuest? "guest": "owner", currentGame);
+// function handleRPS(wss, rtdbRoomId) {
+//     // Send message over web socket connection
+//     console.log("activo handleRPS");
+//     wss.on("connection", (ws) => {
+//         // Handle web socket connection
+//         console.log("WS connected");
+//         ws.on('message',function (message){
+//         });
+
+//         const readyRef           = ref( rtdb, "/rooms/" + rtdbRoomId + "/ready")
+//         const rtdbCurrentGameRef = ref( rtdb, "/rooms/" + rtdbRoomId + "/currentGame")
+//         const rtdbHistoryRef     = ref( rtdb, "/rooms/" + rtdbRoomId + "/history")
+
+//         onValue(readyRef, snapshot => {
+//             console.log("ready: ", snapshot.val());
+
+//             wss.clients.forEach(function each(client) {
+//                 // console.log("client.readyState", client.readyState);
+//                 client.send( JSON.stringify({ ready: snapshot }));
+//             });
+//         })
+//         onValue(rtdbCurrentGameRef, snapshot => {
+//             const currentGame  = snapshot.val()
+//             const currentState = state.getState()
+//             // console.log("currentgame rtdb from: ", currentState.info.imGuest? "guest": "owner", currentGame);
             
-            if(currentGame.guestPlay !== "" && currentGame.ownerPlay !== ""){
-                currentGameResponse(currentGame, rtdbHistoryRef)
-                .then( res => {
-                        wss.clients.forEach(function each(client) {
-                            update(rtdbHistoryRef, res.history)
-                            client.send(JSON.stringify(res))
-                            // console.log("res", res);
-                        });
-                })
-                }
-        })
-        onValue(rtdbHistoryRef, snapshot => {
-            const history = snapshot.val();
-            if (history.owner == 0 && history.guest == 0){
-                wss.clients.forEach(function each(client) {
-                    client.send(JSON.stringify({ status: "restart", history }))
-                });
-            }
-        })
+//             if(currentGame.guestPlay !== "" && currentGame.ownerPlay !== ""){
+//                 currentGameResponse(currentGame, rtdbHistoryRef)
+//                 .then( res => {
+//                         wss.clients.forEach(function each(client) {
+//                             update(rtdbHistoryRef, res.history)
+//                             client.send(JSON.stringify(res))
+//                             // console.log("res", res);
+//                         });
+//                 })
+//                 }
+//         })
+//         onValue(rtdbHistoryRef, snapshot => {
+//             const history = snapshot.val();
+//             if (history.owner == 0 && history.guest == 0){
+//                 wss.clients.forEach(function each(client) {
+//                     client.send(JSON.stringify({ status: "restart", history }))
+//                 });
+//             }
+//         })
     
-    });
+//     });
+// }
+const http = require('http');
+const ws = require('ws');
+const wsPort = 8080
+
+// DE DONDE SALE ESTE PORT??
+const wss = new ws.Server({port: 3100});
+
+function accept(req, res) {
+    wss.handleUpgrade(req, req.socket, Buffer.alloc(0), onConnect);
+}
+
+
+function onConnect(ws) {
+    ws.on('message', function (message) {
+    const rtdbRoomId = message.toString()
+    const chatroomsRef = ref(rtdb,"/rooms/" + rtdbRoomId)
+    
+        
+    onValue(chatroomsRef, snapshot => {
+        const elyeison = JSON.stringify(snapshot.val())
+        ws.send(elyeison)
+    })
+  });
+}
+
+if (!module.parent) {
+  http.createServer(accept).listen(wsPort);
+} else {
+  exports.accept = accept;
 }
 
 
