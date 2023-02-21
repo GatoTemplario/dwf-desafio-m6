@@ -19,11 +19,11 @@ function initWs(API_BASE_URL){
         if(nodeEnv == "production"){
             console.log("boolean true");
             
-            return location.hostname + ":8080"  
+            return location.host
         }else{
             console.log("boolean false");
             
-            return location.host
+            return location.hostname + ":8080"  
         }
         
     }
