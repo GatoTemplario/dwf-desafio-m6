@@ -74,7 +74,7 @@ const state = {
         const currentState = state.getState()
         console.log("apibase: ", API_BASE_URL);
         
-        fetch( API_BASE_URL + '/rooms',{
+        fetch( API_BASE_URL + 'rooms',{
             method: "POST",
             headers: {"content-type": 'application/json'},
             body: JSON.stringify({shortRoomIdAux: "", nombre: currentState.info.owner})
