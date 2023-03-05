@@ -17,8 +17,8 @@ const app  = express()
 const gameInfo = fs.collection("gameInfo")
 const roomsCollection = fs.collection("rooms")
 
+app.use(cors({origin: true,  Credential: true}))
 app.use(express.json());
-app.use(cors())
 app.use(express.static("dist"))
 
 app.listen(port, () => {
