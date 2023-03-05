@@ -72,7 +72,8 @@ const state = {
     },
     getNewRoom(){
         const currentState = state.getState()
-
+        console.log("apibase: ", API_BASE_URL);
+        
         fetch( API_BASE_URL + '/rooms',{
             method: "POST",
             headers: {"content-type": 'application/json'},
