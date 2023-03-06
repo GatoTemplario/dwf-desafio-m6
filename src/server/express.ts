@@ -21,6 +21,8 @@ app.use(cors({origin: true,  Credential: true}))
 app.use(express.json());
 app.use(express.static("dist"))
 
+console.log(`corriendo node! port: ${port}` );
+
 app.listen(port, () => {
     console.log(`Example app listening http://localhost:${port}`);
 })
