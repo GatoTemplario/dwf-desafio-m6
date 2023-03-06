@@ -30,7 +30,7 @@ function initWs(API_BASE_URL){
     
     // const socket = new WebSocket(`${protocol}://${locationHost(nodeEnv)}`)
     const protocol = window.location.protocol.includes('https') ? 'wss' : 'ws'
-    const socket = new WebSocket(`${protocol}://${locationHost(nodeEnv)}:3100`)
+    const socket = new WebSocket(`${protocol}://${locationHost(nodeEnv)}`)
     console.log("socket: ", socket);
     
     // fetch( API_BASE_URL + '/api/rps/' + currentState.info.rtdbRoomId,{
